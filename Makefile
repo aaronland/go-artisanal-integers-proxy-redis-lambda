@@ -11,7 +11,9 @@ rmdeps:
 	if test -d src; then rm -rf src; fi 
 
 deps:
-	@GOPATH=$(shell pwd) go get "github.com/aaronland/go-artisanal-integers-proxy-redis"
+	@GOPATH=$(shell pwd) go get "github.com/aaronland/go-artisanal-integers-proxy-redis/cmd"
+	mv src/github.com/aaronland/go-artisanal-integers-proxy/vendor/github.com/aaronland src/github.com/aaronland/
+	mv src/github.com/aaronland/go-artisanal-integers-proxy/vendor/github.com/whosonfirst src/github.com/
 
 vendor-deps: rmdeps deps
 	if test ! -d vendor; then mkdir vendor; fi
