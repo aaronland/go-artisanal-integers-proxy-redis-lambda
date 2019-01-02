@@ -12,7 +12,10 @@ rmdeps:
 
 deps:
 	@GOPATH=$(shell pwd) go get "github.com/aaronland/go-artisanal-integers-proxy-redis/cmd"
+	@GOPATH=$(shell pwd) go get "github.com/aaronland/go-artisanal-integers-lambda"
 	@GOPATH=$(shell pwd) go get "github.com/aws/aws-lambda-go/lambda"
+	rm -rf src/github.com/aaronland/go-artisanal-integers-lambda/vendor/github.com/aaronland
+	rm -rf src/github.com/aaronland/go-artisanal-integers-lambda/vendor/github.com/aws
 	mv src/github.com/aaronland/go-artisanal-integers-proxy-redis/vendor/github.com/aaronland/* src/github.com/aaronland/
 	mv src/github.com/aaronland/go-artisanal-integers-proxy-redis/vendor/github.com/whosonfirst src/github.com/
 
@@ -28,4 +31,5 @@ fmt:
 
 bin:	self
 	@GOPATH=$(shell pwd) go build -o bin/proxy-func cmd/proxy-func.go
+	@GOPATH=$(shell pwd) go build -o bin/proxy-server cmd/proxy-server.go
 
