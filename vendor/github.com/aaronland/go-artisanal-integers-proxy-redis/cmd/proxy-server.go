@@ -35,13 +35,14 @@ func main() {
 
 	// set up one or more clients to proxy integers from
 
-	service_args := redis.RedisProxyServiceArgs {
-	     RedisDSN: *dsn,
-	     RedisKey: *key,	
-	     BrooklynIntegers: *brooklyn_integers,
-	     MissionIntegers: *mission_integers,
-	     LondonIntegers: *london_integers,
-	     MinCount: *min,
+	service_args := redis.RedisProxyServiceArgs{
+		RedisDSN:         *dsn,
+		RedisKey:         *key,
+		BrooklynIntegers: *brooklyn_integers,
+		MissionIntegers:  *mission_integers,
+		LondonIntegers:   *london_integers,
+		MinCount:         *min,
+		Logger:           logger,
 	}
 
 	proxy_service, err := redis.NewRedisProxyService(service_args)
