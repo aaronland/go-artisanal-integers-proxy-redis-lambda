@@ -3,14 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/aaronland/go-artisanal-integers"
-	"github.com/aaronland/go-artisanal-integers-proxy/service"
+	"github.com/aaronland/go-artisanal-integers-proxy-redis"
 	"github.com/aaronland/go-artisanal-integers/server"
-	brooklyn_api "github.com/aaronland/go-brooklynintegers-api"
-	london_api "github.com/aaronland/go-londonintegers-api"
-	mission_api "github.com/aaronland/go-missionintegers-api"
 	"github.com/whosonfirst/go-whosonfirst-log"
-	"github.com/whosonfirst/go-whosonfirst-pool-redis"
 	"io"
 	"net/url"
 	"os"
@@ -40,54 +35,20 @@ func main() {
 
 	// set up one or more clients to proxy integers from
 
-	clients := make([]artisanalinteger.Client, 0)
-
-	if *brooklyn_integers {
-		cl := brooklyn_api.NewAPIClient()
-		clients = append(clients, cl)
+	service_args := redis.RedisProxyServiceArgs {
+	     RedisDSN: *dsn,
+	     RedisKey: *key,	
+	     BrooklynIntegers: *brooklyn_integers,
+	     MissionIntegers: *mission_integers,
+	     LondonIntegers: *london_integers,
+	     MinCount: *min,
 	}
 
-	if *london_integers {
-		cl := london_api.NewAPIClient()
-		clients = append(clients, cl)
-	}
-
-	if *mission_integers {
-		cl := mission_api.NewAPIClient()
-		clients = append(clients, cl)
-	}
-
-	if len(clients) == 0 {
-		logger.Fatal("Insufficient clients")
-	}
-
-	// set up a local pool for proxied integers
-
-	pl, err := redis.NewRedisLIFOIntPool(*dsn, *key)
+	proxy_service, err := redis.NewRedisProxyService(service_args)
 
 	if err != nil {
 		logger.Fatal(err)
 	}
-
-	// set up the proxy service
-
-	opts, err := service.DefaultProxyServiceOptions()
-
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	opts.Logger = logger
-	opts.Pool = pl
-	opts.Minimum = *min
-
-	pr, err := service.NewProxyService(opts, clients...)
-
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	// set up the actual server endpoint
 
 	addr := fmt.Sprintf("%s://%s:%d", *protocol, *host, *port)
 	u, err := url.Parse(addr)
@@ -102,11 +63,9 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	// go!
-
 	logger.Status("Listening for requests on %s", svr.Address())
 
-	err = svr.ListenAndServe(pr)
+	err = svr.ListenAndServe(proxy_service)
 
 	if err != nil {
 		logger.Fatal(err)

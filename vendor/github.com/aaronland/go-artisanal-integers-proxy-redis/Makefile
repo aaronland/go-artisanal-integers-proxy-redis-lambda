@@ -4,7 +4,7 @@ prep:
 self:   prep
 	if test -d src; then rm -rf src; fi
 	mkdir -p src/github.com/aaronland/go-artisanal-integers-proxy-redis
-	# cp *.go src/github.com/aaronland/go-artisanal-integers-proxy-redis/
+	cp *.go src/github.com/aaronland/go-artisanal-integers-proxy-redis/
 	cp -r vendor/* src/
 
 rmdeps:
@@ -25,6 +25,7 @@ vendor-deps: rmdeps deps
 	rm -rf src
 
 fmt:
+	go fmt *.go
 	go fmt cmd/*.go
 
 bin:	self

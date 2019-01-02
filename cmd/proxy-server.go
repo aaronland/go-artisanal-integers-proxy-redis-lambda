@@ -4,28 +4,18 @@ import (
 	"context"
 	"errors"
 	_ "flag"
-	"github.com/aaronland/go-artisanal-integers-proxy"
+	"github.com/aaronland/go-artisanal-integers-proxy-redis"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/whosonfirst/go-whosonfirst-pool-redis"
 	"os"
 	"strconv"
 )
-
-type RedisProxyServiceArgs struct {
-	RedisDSN         string `json:"redis_dsn"`
-	RedisKey         string `json:"redis_key"`
-	BrooklynIntegers bool   `json:"brooklyn_integers"`
-	LondonIntegers   bool   `json:"london_integers"`
-	MissionIntegers  bool   `json:"mission_integers"`
-	MinCount         int    `json:"min_count"`
-}
 
 func main() {
 
 	lambda.Start(next_int)
 }
 
-func next_int(ctx context.Context, redis_args RedisProxyServiceArgs) (int64, error) {
+func next_int(ctx context.Context, redis_args redis.RedisProxyServiceArgs) (int64, error) {
 
 	err := ensure_args(&redis_args)
 
@@ -33,20 +23,7 @@ func next_int(ctx context.Context, redis_args RedisProxyServiceArgs) (int64, err
 		return -1, err
 	}
 
-	service_args := proxy.ProxyServiceArgs{
-		BrooklynIntegers: redis_args.BrooklynIntegers,
-		LondonIntegers:   redis_args.LondonIntegers,
-		MissionIntegers:  redis_args.MissionIntegers,
-		MinCount:         redis_args.MinCount,
-	}
-
-	pool, err := redis.NewRedisLIFOIntPool(redis_args.RedisDSN, redis_args.RedisKey)
-
-	if err != nil {
-		return -1, err
-	}
-
-	service, err := proxy.NewProxyServiceWithPool(pool, service_args)
+	service, err := redis.NewRedisProxyService(redis_args)
 
 	if err != nil {
 		return -1, err
@@ -55,7 +32,7 @@ func next_int(ctx context.Context, redis_args RedisProxyServiceArgs) (int64, err
 	return service.NextInt()
 }
 
-func ensure_args(args *RedisProxyServiceArgs) error {
+func ensure_args(args *redis.RedisProxyServiceArgs) error {
 
 	if args.RedisDSN == "" {
 
@@ -96,27 +73,20 @@ func ensure_args(args *RedisProxyServiceArgs) error {
 		args.MinCount = min
 	}
 
-	/*
-
-	if args.BrooklynIntegers == nil {
-
+	if args.BrooklynIntegers == false {
 		_, ok := os.LookupEnv("BROOKLYN_INTEGERS")
 		args.BrooklynIntegers = ok
 	}
 
-	if args.MissionIntegers == nil {
-
+	if args.MissionIntegers == false {
 		_, ok := os.LookupEnv("MISSION_INTEGERS")
 		args.MissionIntegers = ok
 	}
 
-	if args.LondonIntegers == nil {
-
+	if args.LondonIntegers == false {
 		_, ok := os.LookupEnv("LONDON_INTEGERS")
 		args.LondonIntegers = ok
 	}
-
-	*/
 
 	return nil
 }

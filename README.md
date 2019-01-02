@@ -20,5 +20,5 @@ THIS DOES NOT WORK YET. No.
 
 * https://github.com/aaronland/go-artisanal-integers
 * https://github.com/aaronland/go-artisanal-integers-proxy
-* https://github.com/aaronland/go-artisanal-integers-proxy-redis
-
+* https://github.com/whosonfirst/go-whosonfirst-pool-redis
+* https://github.com/aws/aws-lambda-go/lambda

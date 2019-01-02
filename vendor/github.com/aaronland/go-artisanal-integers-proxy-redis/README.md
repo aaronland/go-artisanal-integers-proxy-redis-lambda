@@ -88,6 +88,7 @@ Which again triggers the "fetch a new integer" signal. And so on...
 
 ## See also:
 
-* https://github.com/aaronland/go-artisanal-integers-proxy
 * https://github.com/aaronland/go-artisanal-integers
+* https://github.com/aaronland/go-artisanal-integers-proxy
+* https://github.com/whosonfirst/go-whosonfirst-pool-redis
 * https://redis.io/
