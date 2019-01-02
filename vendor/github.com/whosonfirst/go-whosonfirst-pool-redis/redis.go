@@ -3,6 +3,7 @@ package redis
 import (
 	redigo "github.com/gomodule/redigo/redis"
 	"github.com/whosonfirst/go-whosonfirst-pool"
+	"log"
 )
 
 type DeflateFunc func(pool.Item) (interface{}, error)
@@ -40,15 +41,18 @@ func NewRedisLIFOIntPool(dsn string, key string) (pool.LIFOPool, error) {
 }
 
 func NewRedisLIFOPool(dsn string, key string, deflate DeflateFunc, inflate InflateFunc) (pool.LIFOPool, error) {
-
+	
 	redis_pool := &redigo.Pool{
 		MaxActive: 1000,
 		Dial: func() (redigo.Conn, error) {
 
 			// https://www.iana.org/assignments/uri-schemes/prov/redis
 
+			log.Printf("DIAL '%s'\n", dsn)			
 			c, err := redigo.DialURL(dsn)
 
+			log.Printf("DIALED '%s' %v\n", dsn, err)
+			
 			if err != nil {
 				return nil, err
 			}
@@ -108,6 +112,7 @@ func (pl *RedisLIFOPool) Pop() (pool.Item, bool) {
 	pi, err := pl.inflate(rsp, err)
 
 	if err != nil {
+		log.Println("NO POP", err)
 		return nil, false
 	}
 
