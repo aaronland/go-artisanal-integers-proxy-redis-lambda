@@ -27,5 +27,5 @@ fmt:
 	go fmt cmd/*.go
 
 bin:	self
-	@GOPATH=$(shell pwd) go build -o bin/proxy-server cmd/proxy-server.go
+	@GOPATH=$(shell pwd) go build -o bin/proxy-func cmd/proxy-func.go
 
