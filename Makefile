@@ -34,3 +34,20 @@ bin:	self
 	@GOPATH=$(shell pwd) go build -o bin/proxy-func cmd/proxy-func.go
 	@GOPATH=$(shell pwd) go build -o bin/proxy-server cmd/proxy-server.go
 
+lambda: lambda-func lambda-server
+
+lambda-func:
+	@make self
+	if test -f main; then rm -f main; fi
+	if test -f proxy-func.zip; then rm -f proxy-func.zip; fi
+	@GOPATH=$(shell pwd) GOOS=linux go build -o main cmd/proxy-func.go
+	zip proxy-func.zip main
+	rm -f main
+
+lambda-server:
+	@make self
+	if test -f main; then rm -f main; fi
+	if test -f proxy-server.zip; then rm -f proxy-server.zip; fi
+	@GOPATH=$(shell pwd) GOOS=linux go build -o main cmd/proxy-server.go
+	zip proxy-server.zip main
+	rm -f main
