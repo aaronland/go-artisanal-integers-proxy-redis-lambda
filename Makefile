@@ -4,7 +4,7 @@ prep:
 self:   prep
 	if test -d src; then rm -rf src; fi
 	mkdir -p src/github.com/aaronland/go-artisanal-integers-proxy-redis-lambda
-	# cp *.go src/github.com/aaronland/go-artisanal-integers-proxy-redis-lambda/
+	cp -r util src/github.com/aaronland/go-artisanal-integers-proxy-redis-lambda/
 	cp -r vendor/* src/
 
 rmdeps:
@@ -28,6 +28,7 @@ vendor-deps: rmdeps deps
 
 fmt:
 	go fmt cmd/*.go
+	go fmt util/*.go
 
 bin:	self
 	@GOPATH=$(shell pwd) go build -o bin/proxy-func cmd/proxy-func.go
